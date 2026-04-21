@@ -1,10 +1,15 @@
 export function HouseSkeleton() {
   return (
-    <div className="flex flex-col items-center justify-center bg-white rounded-lg shadow-md p-4 mb-6 w-[400px] animate-pulse">
-      <div className="w-[400px] h-[300px] bg-zinc-200 rounded-lg mb-4" />
-      <div className="h-5 w-48 bg-zinc-200 rounded mb-2" />
-      <div className="h-4 w-36 bg-zinc-200 rounded mb-2" />
-      <div className="h-4 w-24 bg-zinc-200 rounded" />
+    <div className="w-full max-w-3xl flex flex-row bg-white rounded-lg shadow-sm border border-zinc-200 overflow-hidden animate-pulse">
+      <div className="w-72 shrink-0 h-45 bg-zinc-200" />
+      <div className="flex flex-1 flex-col justify-between p-5">
+        <div className="flex flex-col gap-3">
+          <div className="h-7 w-36 bg-zinc-200 rounded" />
+          <div className="h-5 w-64 bg-zinc-200 rounded" />
+          <div className="h-4 w-32 bg-zinc-200 rounded" />
+        </div>
+        <div className="h-9 w-28 bg-zinc-200 rounded self-end" />
+      </div>
     </div>
-  );
+  )
 }

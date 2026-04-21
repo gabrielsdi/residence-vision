@@ -1,12 +1,14 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
+import { House as HouseIcon } from "lucide-react";
 import { getHouses } from "./lib/api";
 import ErrorPage from "./error/page";
 import { House } from "./types";
 import { HouseSkeleton } from "./skeleton/page";
+import { HouseCard } from "@/components/houseCard";
+
 
 const PER_PAGE = 10;
 
@@ -53,10 +55,14 @@ export default function Home() {
 
   if (loading) return (
   <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-    <header className="w-full bg-white shadow-md p-4 mb-6">
-      <h1 className="text-3xl font-bold text-center text-black">Residence Vision</h1>
-    </header>
-    <ul>
+    <header className="w-full bg-white shadow-md p-4 mb-6 top-0 z-10 fixed">
+        <div className="flex items-center justify-start gap-2">
+          <HouseIcon className="w-10 h-10 text-indigo-500" />
+          <h1 className="text-xl font-bold text-indigo-500">Residence Vision</h1>
+        </div>
+      </header>
+      <div className="pt-24 w-full"></div>
+    <ul className="flex flex-col gap-4 w-full max-w-3xl px-4">
       {Array.from({ length: 6 }).map((_, i) => (
         <li key={i}><HouseSkeleton /></li>
       ))}
@@ -67,9 +73,14 @@ export default function Home() {
 
   return (
     <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <header className="w-full bg-white shadow-md p-4 mb-6">
-        <h1 className="text-3xl font-bold text-center text-black">Residence Vision</h1>
+      <header className="w-full bg-white shadow-md p-4 mb-6 top-0 z-10 fixed">
+        <div className="flex items-center align-bottom justify-start gap-2">
+          <HouseIcon className="w-10 h-10 text-indigo-500" />
+          <h1 className="text-xl font-bold text-indigo-500">Residence Vision</h1>
+        </div>
       </header>
+
+      <div className="pt-24 w-full"></div>
 
       <InfiniteScroll
         dataLength={houses.length}
@@ -77,7 +88,7 @@ export default function Home() {
         hasMore={hasMore}     
         loader={
   isFetchingMore ? (
-    <ul>
+    <ul className="flex flex-col gap-4 w-full max-w-3xl px-4">
       {Array.from({ length: 3 }).map((_, i) => (
         <li key={i}><HouseSkeleton /></li>
       ))}
@@ -89,21 +100,10 @@ export default function Home() {
         }
         scrollThreshold={0.9}
       >
-        <ul>
+        <ul className="flex flex-col gap-4 w-full max-w-3xl px-4">
           {houses.map((house) => (
-            <li key={house.id}>
-              <div className="flex flex-col items-center justify-center bg-white rounded-lg shadow-md p-4 mb-6">
-                <Image
-                  src={house.photoURL}
-                  alt={`Photo of ${house.address}`}
-                  width={400}
-                  height={300}
-                  className="rounded-lg mb-4"
-                />
-                <h2 className="text-xl text-black font-bold">{house.address}</h2>
-                <p className="text-black">Homeowner: {house.homeowner}</p>
-                <p className="text-black">Price: ${house.price.toLocaleString()}</p>
-              </div>
+            <li key={house.id} className="w-full">              
+              <HouseCard house={house} />
             </li> 
           ))}
         </ul>
