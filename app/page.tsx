@@ -2,24 +2,32 @@
 
 import { useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { House as HouseIcon } from "lucide-react";
 import { getHouses } from "./lib/api";
 import ErrorPage from "./error/page";
 import { House } from "./types";
 import { HouseSkeleton } from "./skeleton/page";
 import { HouseCard } from "@/components/houseCard";
+import { Header } from "@/components/header";
+import { Sidebar } from "@/components/sidebar";
 
 
 const PER_PAGE = 10;
 
 export default function Home() {
   const [houses, setHouses] = useState<House[]>([]);
+  const [favoritesHouses, setFavoritesHouses] = useState<House[]>([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(true);
   const [isFetchingMore, setIsFetchingMore] = useState(false);
   const [error, setError] = useState(false);
   const [errorStatus, setErrorStatus] = useState("");
+
+  //Filter status
+  const [homeowner, setHomeowner] = useState('');
+const [address, setAddress] = useState('');
+const [sortBy, setSortBy] = useState('');
+const [showFavorites, setShowFavorites] = useState(false);
 
   // Carga inicial
   useEffect(() => {
@@ -45,50 +53,71 @@ export default function Home() {
     setHouses((prev) => [...prev, ...newHouses]);
     setPage(nextPage);
     setHasMore(newHouses.length === PER_PAGE);
-  } catch (e: any) {
-    setErrorStatus(e.message);
+  } catch (e: Error | unknown) {
+    const errorMsg = e instanceof Error ? e.message : 'Unknown error';
+    setErrorStatus(errorMsg);
     setError(true);
   } finally {
     setIsFetchingMore(false);
   }
 };
 
-  if (loading) return (
-  <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-    <header className="w-full bg-white shadow-md p-4 mb-6 top-0 z-10 fixed">
-        <div className="flex items-center justify-start gap-2">
-          <HouseIcon className="w-10 h-10 text-indigo-500" />
-          <h1 className="text-xl font-bold text-indigo-500">Residence Vision</h1>
-        </div>
-      </header>
-      <div className="pt-24 w-full"></div>
-    <ul className="flex flex-col gap-4 w-full max-w-3xl px-4">
-      {Array.from({ length: 6 }).map((_, i) => (
-        <li key={i}><HouseSkeleton /></li>
-      ))}
-    </ul>
-  </div>
-);
+
+
+const clearFilters = () => {
+  setHomeowner('');
+  setAddress('');
+    setSortBy('');
+    setFavoritesHouses([]);
+}
+
+const addFavoriteHouse = (house: House) => {
+  setFavoritesHouses((prev) => [...prev, house]);
+}
+
+const isFiltering = !!homeowner || !!address || showFavorites;
+
+
+const filteredHouses = houses.filter(house => {
+  if (showFavorites && !favoritesHouses.some(fav => fav.id === house.id)) return false;
+  if (homeowner && !house.homeowner.toLowerCase().includes(homeowner.toLowerCase())) return false;
+  if (address && !house.address.toLowerCase().includes(address.toLowerCase())) return false;
+  return true;
+}).sort((a, b) => {
+  if (sortBy === 'Lowest price') return a.price - b.price;
+  if (sortBy === 'Highest price') return b.price - a.price;
+  return 0;
+});
+
   if (error) return <ErrorPage errorStatus={errorStatus} handleClick={() => window.location.reload()} />;
 
   return (
     <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <header className="w-full bg-white shadow-md p-4 mb-6 top-0 z-10 fixed">
-        <div className="flex items-center align-bottom justify-start gap-2">
-          <HouseIcon className="w-10 h-10 text-indigo-500" />
-          <h1 className="text-xl font-bold text-indigo-500">Residence Vision</h1>
-        </div>
-      </header>
-
-      <div className="pt-24 w-full"></div>
-
-      <InfiniteScroll
+     
+  <Header />
+  <Sidebar 
+    onHomeownerChange={setHomeowner}
+    onAddressChange={setAddress}
+    onSortByChange={setSortBy}
+    onShowFavoritesChange={setShowFavorites}
+    onClearFilter={clearFilters}
+  />
+  {loading && (
+    <ul className="flex flex-col gap-4 w-full max-w-3xl px-4 pt-26">
+      {Array.from({ length: 6 }).map((_, i) => (
+        <li key={i}><HouseSkeleton /></li>
+      ))}
+    </ul>
+  )}
+      
+      <InfiniteScroll className="pt-26 w-full"
+      style={{ minWidth: '100%', overflow: 'visible' }}
         dataLength={houses.length}
         next={fetchMoreHouses}   
-        hasMore={hasMore}     
+        hasMore={!isFiltering && hasMore}      
         loader={
   isFetchingMore ? (
-    <ul className="flex flex-col gap-4 w-full max-w-3xl px-4">
+    <ul className="flex flex-col gap-4 w-full max-w-3xl px-4 min-w-0">
       {Array.from({ length: 3 }).map((_, i) => (
         <li key={i}><HouseSkeleton /></li>
       ))}
@@ -101,9 +130,9 @@ export default function Home() {
         scrollThreshold={0.9}
       >
         <ul className="flex flex-col gap-4 w-full max-w-3xl px-4">
-          {houses.map((house) => (
+          {filteredHouses.map((house) => (
             <li key={house.id} className="w-full">              
-              <HouseCard house={house} />
+              <HouseCard house={house} onLike={addFavoriteHouse} />
             </li> 
           ))}
         </ul>

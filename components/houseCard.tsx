@@ -6,16 +6,24 @@ import { cn } from '@/lib/utils'
 import Image from 'next/image'
 import { House } from '@/app/types'
 
-export function HouseCard({ house }: { house: House }) {
+export function HouseCard({ house, onLike }: { house: House, onLike?: (house: House) => void }) {
   const [liked, setLiked] = useState<boolean>(false)
 
+  const toggleLike = () => {
+    const newLikedState = !liked;
+    setLiked(newLikedState);
+    if (onLike) onLike(house);
+  }
+
   return (
-    <div className="w-full max-w-3xl flex flex-row bg-white rounded-lg shadow-sm border border-zinc-200 overflow-hidden">   
+    <div className="w-[768px] flex flex-row bg-white rounded-lg shadow-sm border border-zinc-200 overflow-hidden">
       <div className="relative w-72 h-45 shrink-0">
         <Image
           src={house.photoURL}
           alt={`Photo of ${house.address}`}
           fill
+          sizes="288px"
+          priority
           className="object-cover"
         />
       </div>
@@ -28,7 +36,7 @@ export function HouseCard({ house }: { house: House }) {
             <Button
               size='icon'
               variant='ghost'
-              onClick={() => setLiked(!liked)}
+              onClick={toggleLike}
               className='rounded-full'
             >
               <HeartIcon className={cn('w-5 h-5', liked ? 'fill-red-500 stroke-red-500' : 'stroke-muted-foreground')} />
