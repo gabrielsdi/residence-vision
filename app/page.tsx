@@ -9,15 +9,16 @@ import { HouseSkeleton } from "./skeleton/page";
 import { HouseCard } from "@/components/houseCard";
 import { Header } from "@/components/header";
 import { Sidebar } from "@/components/sidebar";
+import { ERROR_MESSAGES } from "./const/error";
 
 const PER_PAGE = 10;
+const EMPTY_HOUSE_MESSAGE = "No more houses to load";
 
 export default function Home() {
   const [houses, setHouses] = useState<House[]>([]);
   const [favoritesHouses, setFavoritesHouses] = useState<House[]>([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const [loading, setLoading] = useState(true);
   const [isFetchingMore, setIsFetchingMore] = useState(false);
   const [error, setError] = useState(false);
   const [errorStatus, setErrorStatus] = useState("");
@@ -28,19 +29,36 @@ export default function Home() {
   const [sortBy, setSortBy] = useState("");
   const [showFavorites, setShowFavorites] = useState(false);
 
-  // Carga inicial
-  useEffect(() => {
+  const isFiltering = !!homeowner || !!address || showFavorites;
+
+  const clearFilters = () => {
+    setHomeowner("");
+    setAddress("");
+    setSortBy("");
+    setFavoritesHouses([]);
+  };
+
+  const addFavoriteHouse = (house: House) => {
+    setFavoritesHouses((prev) => [...prev, house]);
+  };
+
+  const handleHouseClick = (house: House) => {
+    console.log("Click", house);
+  };
+
+  const fetchHouses = () => {
     getHouses({ page: 1, perPage: PER_PAGE })
       .then(({ houses }) => {
         setHouses(houses);
         setHasMore(houses.length === PER_PAGE);
       })
-      .catch((e) => {
-        setErrorStatus(e.message);
+      .catch((e: Error | unknown) => {
+        const errorMsg =
+          e instanceof Error ? e.message : ERROR_MESSAGES.UNKNOWN_ERROR;
+        setErrorStatus(errorMsg);
         setError(true);
-      })
-      .finally(() => setLoading(false));
-  }, []);
+      });
+  };
 
   const fetchMoreHouses = async () => {
     if (isFetchingMore) return;
@@ -55,26 +73,14 @@ export default function Home() {
       setPage(nextPage);
       setHasMore(newHouses.length === PER_PAGE);
     } catch (e: Error | unknown) {
-      const errorMsg = e instanceof Error ? e.message : "Unknown error";
+      const errorMsg =
+        e instanceof Error ? e.message : ERROR_MESSAGES.UNKNOWN_ERROR;
       setErrorStatus(errorMsg);
       setError(true);
     } finally {
       setIsFetchingMore(false);
     }
   };
-
-  const clearFilters = () => {
-    setHomeowner("");
-    setAddress("");
-    setSortBy("");
-    setFavoritesHouses([]);
-  };
-
-  const addFavoriteHouse = (house: House) => {
-    setFavoritesHouses((prev) => [...prev, house]);
-  };
-
-  const isFiltering = !!homeowner || !!address || showFavorites;
 
   const filteredHouses = houses
     .filter((house) => {
@@ -98,6 +104,10 @@ export default function Home() {
       return 0;
     });
 
+  useEffect(() => {
+    fetchHouses();
+  }, []);
+
   if (error)
     return (
       <ErrorPage
@@ -116,15 +126,6 @@ export default function Home() {
         onShowFavoritesChange={setShowFavorites}
         onClearFilter={clearFilters}
       />
-      {loading && (
-        <ul className="flex flex-col gap-4 w-full max-w-3xl px-4 pt-26">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <li key={i}>
-              <HouseSkeleton />
-            </li>
-          ))}
-        </ul>
-      )}
 
       <InfiniteScroll
         className="pt-26 w-full"
@@ -144,16 +145,22 @@ export default function Home() {
           ) : null
         }
         endMessage={
-          <p className="text-center text-gray-400 py-6">
-            No hay más propiedades.
-          </p>
+          !isFiltering && (
+            <p className="text-center text-gray-400 py-6">
+              {EMPTY_HOUSE_MESSAGE}
+            </p>
+          )
         }
         scrollThreshold={0.9}
       >
         <ul className="flex flex-col gap-4 w-full max-w-3xl px-4">
-          {filteredHouses.map((house) => (
-            <li key={house.id} className="w-full">
-              <HouseCard house={house} onLike={addFavoriteHouse} />
+          {filteredHouses.map((house, index) => (
+            <li key={`${house.id}-${index}`} className="w-full">
+              <HouseCard
+                house={house}
+                onLikeToggle={addFavoriteHouse}
+                onClick={handleHouseClick}
+              />
             </li>
           ))}
         </ul>

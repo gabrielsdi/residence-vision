@@ -8,25 +8,33 @@ import { House } from "@/app/types";
 
 export function HouseCard({
   house,
-  onLike,
+  onLikeToggle,
+  onClick,
 }: {
   house: House;
-  onLike?: (house: House) => void;
+  onLikeToggle?: (house: House) => void;
+  onClick?: (house: House) => void;
 }) {
   const [liked, setLiked] = useState<boolean>(false);
+  const { address, homeowner, price, photoURL } = house;
+  const formattedPrice = `$${price.toLocaleString()}`;
 
-  const toggleLike = () => {
+  const toggleLike = (e: React.MouseEvent) => {
+    e.stopPropagation();
     const newLikedState = !liked;
     setLiked(newLikedState);
-    if (onLike) onLike(house);
+    if (onLikeToggle) onLikeToggle(house);
   };
 
   return (
-    <div className="w-[768px] flex flex-row bg-white rounded-lg shadow-sm border border-zinc-200 overflow-hidden">
+    <div
+      className="w-[768px] flex flex-row bg-white rounded-lg shadow-sm border border-zinc-200 overflow-hidden transition-transform duration-200 hover:scale-[1.02] cursor-pointer"
+      onClick={() => onClick?.(house)}
+    >
       <div className="relative w-72 h-45 shrink-0">
         <Image
-          src={house.photoURL}
-          alt={`Photo of ${house.address}`}
+          src={photoURL}
+          alt={`Photo of ${address}`}
           fill
           sizes="288px"
           priority
@@ -37,9 +45,7 @@ export function HouseCard({
       <div className="flex flex-1 flex-col justify-between p-5">
         <div className="flex flex-col gap-2">
           <div className="flex items-start justify-between">
-            <span className="text-2xl font-bold">
-              ${house.price.toLocaleString()}
-            </span>
+            <span className="text-2xl font-bold">{formattedPrice}</span>
             <Button
               size="icon"
               variant="ghost"
@@ -57,12 +63,10 @@ export function HouseCard({
             </Button>
           </div>
           <div>
-            <h2 className="text-base font-bold">{house.address}</h2>
-            <p className="text-sm text-muted-foreground">{house.homeowner}</p>
+            <h2 className="text-base font-bold">{address}</h2>
+            <p className="text-sm text-muted-foreground">{homeowner}</p>
           </div>
         </div>
-
-        <Button className="self-end">View details</Button>
       </div>
     </div>
   );
