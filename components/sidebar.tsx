@@ -1,8 +1,21 @@
 import React, { useState } from "react";
 import { Checkbox } from "./ui/checkbox";
-import { Combobox, ComboboxContent, ComboboxEmpty, ComboboxInput, ComboboxItem, ComboboxList } from "./ui/combobox";
+import {
+  Combobox,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+} from "./ui/combobox";
 import { Input } from "./ui/input";
-import { Field, FieldContent, FieldGroup, FieldLabel, FieldTitle } from "./ui/field";
+import {
+  Field,
+  FieldContent,
+  FieldGroup,
+  FieldLabel,
+  FieldTitle,
+} from "./ui/field";
 import { Button } from "./ui/button";
 
 type SidebarProps = {
@@ -11,42 +24,58 @@ type SidebarProps = {
   onSortByChange: (value: string) => void;
   onClearFilter: () => void;
   onShowFavoritesChange: (value: boolean) => void;
-}
+};
 
-export const Sidebar = ({ onHomeownerChange, onAddressChange, onSortByChange, onShowFavoritesChange, onClearFilter }: SidebarProps) => {
-  const [homeownerValue, setHomeownerValue] = useState('');
-  const [addressValue, setAddressValue] = useState('');
-  const [sortByValue, setSortByValue] = useState('');
+export const Sidebar = ({
+  onHomeownerChange,
+  onAddressChange,
+  onSortByChange,
+  onShowFavoritesChange,
+  onClearFilter,
+}: SidebarProps) => {
+  const [homeownerValue, setHomeownerValue] = useState("");
+  const [addressValue, setAddressValue] = useState("");
+  const [sortByValue, setSortByValue] = useState("");
   const [showFavoritesValue, setShowFavoritesValue] = useState(false);
 
   const resetFilters = () => {
-    setHomeownerValue('');
-    setAddressValue('');
-    setSortByValue('');
+    setHomeownerValue("");
+    setAddressValue("");
+    setSortByValue("");
     setShowFavoritesValue(false);
-    onHomeownerChange('');
-    onAddressChange('');
-    onSortByChange('');
+    onHomeownerChange("");
+    onAddressChange("");
+    onSortByChange("");
     onShowFavoritesChange(false);
     onClearFilter();
-  }
+  };
 
-  return (   
+  return (
     <aside className="fixed left-0 top-18 h-[calc(100vh-72px)] w-64 bg-white shadow-md p-4 flex flex-col gap-4 z-10 pt-8">
       <Input
         placeholder="Homeowner"
         value={homeownerValue}
-        onChange={(e) => { setHomeownerValue(e.target.value); onHomeownerChange(e.target.value); }}
+        onChange={(e) => {
+          setHomeownerValue(e.target.value);
+          onHomeownerChange(e.target.value);
+        }}
       />
       <Input
         placeholder="Address"
         value={addressValue}
-        onChange={(e) => { setAddressValue(e.target.value); onAddressChange(e.target.value); }}
+        onChange={(e) => {
+          setAddressValue(e.target.value);
+          onAddressChange(e.target.value);
+        }}
       />
       <Combobox
-        items={['Lowest price', 'Highest price']}
+        items={["Lowest price", "Highest price"]}
         value={sortByValue}
-        onValueChange={(value) => { const val = value || ''; setSortByValue(val); onSortByChange(val); }}
+        onValueChange={(value) => {
+          const val = value || "";
+          setSortByValue(val);
+          onSortByChange(val);
+        }}
       >
         <ComboboxInput placeholder="Sort by" />
         <ComboboxContent>
@@ -67,7 +96,10 @@ export const Sidebar = ({ onHomeownerChange, onAddressChange, onSortByChange, on
               id="toggle-checkbox-2"
               name="toggle-checkbox-2"
               checked={showFavoritesValue}
-              onCheckedChange={(checked) => { setShowFavoritesValue(!!checked); onShowFavoritesChange(!!checked); }}
+              onCheckedChange={(checked) => {
+                setShowFavoritesValue(!!checked);
+                onShowFavoritesChange(!!checked);
+              }}
             />
             <FieldContent>
               <FieldTitle>Show Favorites</FieldTitle>
@@ -75,7 +107,9 @@ export const Sidebar = ({ onHomeownerChange, onAddressChange, onSortByChange, on
           </Field>
         </FieldLabel>
       </FieldGroup>
-      <Button variant="outline" onClick={resetFilters}>Clear Filter</Button>
+      <Button variant="outline" onClick={resetFilters}>
+        Clear Filter
+      </Button>
     </aside>
   );
-}
+};

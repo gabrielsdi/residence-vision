@@ -11,5 +11,5 @@ export function HouseSkeleton() {
         <div className="h-9 w-28 bg-zinc-200 rounded self-end" />
       </div>
     </div>
-  )
+  );
 }

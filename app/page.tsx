@@ -10,7 +10,6 @@ import { HouseCard } from "@/components/houseCard";
 import { Header } from "@/components/header";
 import { Sidebar } from "@/components/sidebar";
 
-
 const PER_PAGE = 10;
 
 export default function Home() {
@@ -24,10 +23,10 @@ export default function Home() {
   const [errorStatus, setErrorStatus] = useState("");
 
   //Filter status
-  const [homeowner, setHomeowner] = useState('');
-const [address, setAddress] = useState('');
-const [sortBy, setSortBy] = useState('');
-const [showFavorites, setShowFavorites] = useState(false);
+  const [homeowner, setHomeowner] = useState("");
+  const [address, setAddress] = useState("");
+  const [sortBy, setSortBy] = useState("");
+  const [showFavorites, setShowFavorites] = useState(false);
 
   // Carga inicial
   useEffect(() => {
@@ -43,97 +42,119 @@ const [showFavorites, setShowFavorites] = useState(false);
       .finally(() => setLoading(false));
   }, []);
 
+  const fetchMoreHouses = async () => {
+    if (isFetchingMore) return;
+    setIsFetchingMore(true);
+    const nextPage = page + 1;
+    try {
+      const { houses: newHouses } = await getHouses({
+        page: nextPage,
+        perPage: PER_PAGE,
+      });
+      setHouses((prev) => [...prev, ...newHouses]);
+      setPage(nextPage);
+      setHasMore(newHouses.length === PER_PAGE);
+    } catch (e: Error | unknown) {
+      const errorMsg = e instanceof Error ? e.message : "Unknown error";
+      setErrorStatus(errorMsg);
+      setError(true);
+    } finally {
+      setIsFetchingMore(false);
+    }
+  };
 
- const fetchMoreHouses = async () => {
-  if (isFetchingMore) return; 
-  setIsFetchingMore(true);
-  const nextPage = page + 1;
-  try {
-    const { houses: newHouses } = await getHouses({ page: nextPage, perPage: PER_PAGE });
-    setHouses((prev) => [...prev, ...newHouses]);
-    setPage(nextPage);
-    setHasMore(newHouses.length === PER_PAGE);
-  } catch (e: Error | unknown) {
-    const errorMsg = e instanceof Error ? e.message : 'Unknown error';
-    setErrorStatus(errorMsg);
-    setError(true);
-  } finally {
-    setIsFetchingMore(false);
-  }
-};
-
-
-
-const clearFilters = () => {
-  setHomeowner('');
-  setAddress('');
-    setSortBy('');
+  const clearFilters = () => {
+    setHomeowner("");
+    setAddress("");
+    setSortBy("");
     setFavoritesHouses([]);
-}
+  };
 
-const addFavoriteHouse = (house: House) => {
-  setFavoritesHouses((prev) => [...prev, house]);
-}
+  const addFavoriteHouse = (house: House) => {
+    setFavoritesHouses((prev) => [...prev, house]);
+  };
 
-const isFiltering = !!homeowner || !!address || showFavorites;
+  const isFiltering = !!homeowner || !!address || showFavorites;
 
+  const filteredHouses = houses
+    .filter((house) => {
+      if (showFavorites && !favoritesHouses.some((fav) => fav.id === house.id))
+        return false;
+      if (
+        homeowner &&
+        !house.homeowner.toLowerCase().includes(homeowner.toLowerCase())
+      )
+        return false;
+      if (
+        address &&
+        !house.address.toLowerCase().includes(address.toLowerCase())
+      )
+        return false;
+      return true;
+    })
+    .sort((a, b) => {
+      if (sortBy === "Lowest price") return a.price - b.price;
+      if (sortBy === "Highest price") return b.price - a.price;
+      return 0;
+    });
 
-const filteredHouses = houses.filter(house => {
-  if (showFavorites && !favoritesHouses.some(fav => fav.id === house.id)) return false;
-  if (homeowner && !house.homeowner.toLowerCase().includes(homeowner.toLowerCase())) return false;
-  if (address && !house.address.toLowerCase().includes(address.toLowerCase())) return false;
-  return true;
-}).sort((a, b) => {
-  if (sortBy === 'Lowest price') return a.price - b.price;
-  if (sortBy === 'Highest price') return b.price - a.price;
-  return 0;
-});
-
-  if (error) return <ErrorPage errorStatus={errorStatus} handleClick={() => window.location.reload()} />;
+  if (error)
+    return (
+      <ErrorPage
+        errorStatus={errorStatus}
+        handleClick={() => window.location.reload()}
+      />
+    );
 
   return (
     <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-     
-  <Header />
-  <Sidebar 
-    onHomeownerChange={setHomeowner}
-    onAddressChange={setAddress}
-    onSortByChange={setSortBy}
-    onShowFavoritesChange={setShowFavorites}
-    onClearFilter={clearFilters}
-  />
-  {loading && (
-    <ul className="flex flex-col gap-4 w-full max-w-3xl px-4 pt-26">
-      {Array.from({ length: 6 }).map((_, i) => (
-        <li key={i}><HouseSkeleton /></li>
-      ))}
-    </ul>
-  )}
-      
-      <InfiniteScroll className="pt-26 w-full"
-      style={{ minWidth: '100%', overflow: 'visible' }}
+      <Header />
+      <Sidebar
+        onHomeownerChange={setHomeowner}
+        onAddressChange={setAddress}
+        onSortByChange={setSortBy}
+        onShowFavoritesChange={setShowFavorites}
+        onClearFilter={clearFilters}
+      />
+      {loading && (
+        <ul className="flex flex-col gap-4 w-full max-w-3xl px-4 pt-26">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <li key={i}>
+              <HouseSkeleton />
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <InfiniteScroll
+        className="pt-26 w-full"
+        style={{ minWidth: "100%", overflow: "visible" }}
         dataLength={houses.length}
-        next={fetchMoreHouses}   
-        hasMore={!isFiltering && hasMore}      
+        next={fetchMoreHouses}
+        hasMore={!isFiltering && hasMore}
         loader={
-  isFetchingMore ? (
-    <ul className="flex flex-col gap-4 w-full max-w-3xl px-4 min-w-0">
-      {Array.from({ length: 3 }).map((_, i) => (
-        <li key={i}><HouseSkeleton /></li>
-      ))}
-    </ul>
-  ) : null
-}
+          isFetchingMore ? (
+            <ul className="flex flex-col gap-4 w-full max-w-3xl px-4 min-w-0">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <li key={i}>
+                  <HouseSkeleton />
+                </li>
+              ))}
+            </ul>
+          ) : null
+        }
         endMessage={
-          <p className="text-center text-gray-400 py-6">No hay más propiedades.</p>
+          <p className="text-center text-gray-400 py-6">
+            No hay más propiedades.
+          </p>
         }
         scrollThreshold={0.9}
       >
         <ul className="flex flex-col gap-4 w-full max-w-3xl px-4">
           {filteredHouses.map((house) => (
-            <li key={house.id} className="w-full">              
+            <li key={house.id} className="w-full">
               <HouseCard house={house} onLike={addFavoriteHouse} />
-            </li> 
+            </li>
           ))}
         </ul>
       </InfiniteScroll>
