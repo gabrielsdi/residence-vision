@@ -6,9 +6,9 @@ import { getHouses } from "./lib/api";
 import ErrorPage from "./error/page";
 import { House } from "./types";
 import { HouseSkeleton } from "./skeleton/page";
-import { HouseCard } from "@/components/houseCard";
-import { Header } from "@/components/header";
-import { Sidebar } from "@/components/sidebar";
+import { HouseCard } from "@/components/HouseCard";
+import { Header } from "@/components/Header";
+import { Sidebar } from "@/components/SideBar";
 import { ERROR_MESSAGES } from "./const/error";
 
 const PER_PAGE = 10;
