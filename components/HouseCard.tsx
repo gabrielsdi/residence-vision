@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { HeartIcon } from "lucide-react";
+import { HeartIcon, MailIcon, MessageCircleIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
@@ -22,6 +22,21 @@ export function HouseCard({
     const newLikedState = !liked;
     setLiked(newLikedState);
     if (onLikeToggle) onLikeToggle(house);
+  };
+
+  const handleMail = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    window.open(
+      `mailto:?subject=Inquiry about ${address}&body=Hi ${homeowner}, I'm interested in the property at ${address}.`,
+    );
+  };
+
+  const handleWhatsapp = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const message = encodeURIComponent(
+      `Hi ${homeowner}, I'm interested in the property at ${address}.`,
+    );
+    window.open(`https://wa.me/?text=${message}`, "_blank");
   };
 
   return (
@@ -61,6 +76,27 @@ export function HouseCard({
             <h2 className="text-base font-bold">{address}</h2>
             <p className="text-sm text-muted-foreground">{homeowner}</p>
           </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Button
+            size="icon"
+            variant="outline"
+            onClick={handleWhatsapp}
+            className="rounded-full cursor-pointer text-green-500 border-green-500 hover:bg-green-50"
+            title="Contact on WhatsApp"
+          >
+            <MessageCircleIcon className="w-4 h-4" />
+          </Button>
+          <Button
+            size="icon"
+            variant="outline"
+            onClick={handleMail}
+            className="rounded-full cursor-pointer"
+            title="Send email"
+          >
+            <MailIcon className="w-4 h-4" />
+          </Button>
         </div>
       </div>
     </div>
