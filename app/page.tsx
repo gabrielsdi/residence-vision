@@ -5,7 +5,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import { getHouses } from "./lib/api";
 import ErrorPage from "./error/page";
 import { House } from "./types";
-import { HouseSkeleton } from "./skeleton/page";
+import { HouseSkeleton } from "../components/HouseSkeleton";
 import { HouseCard } from "@/components/HouseCard";
 import { Header } from "@/components/Header";
 import { SideBar } from "@/components/SideBar";
