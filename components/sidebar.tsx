@@ -18,7 +18,7 @@ import {
 } from "./ui/field";
 import { Button } from "./ui/button";
 
-type SidebarProps = {
+type SideBarProps = {
   onHomeownerChange: (value: string) => void;
   onAddressChange: (value: string) => void;
   onSortByChange: (value: string) => void;
@@ -26,13 +26,13 @@ type SidebarProps = {
   onShowFavoritesChange: (value: boolean) => void;
 };
 
-export const Sidebar = ({
+export const SideBar = ({
   onHomeownerChange,
   onAddressChange,
   onSortByChange,
   onShowFavoritesChange,
   onClearFilter,
-}: SidebarProps) => {
+}: SideBarProps) => {
   const [homeownerValue, setHomeownerValue] = useState("");
   const [addressValue, setAddressValue] = useState("");
   const [sortByValue, setSortByValue] = useState("");
@@ -53,6 +53,8 @@ export const Sidebar = ({
   return (
     <aside className="fixed left-0 top-18 h-[calc(100vh-72px)] w-64 bg-white shadow-md p-4 flex flex-col gap-4 z-10 pt-8">
       <Input
+        data-testid="homeowner-input"
+        id="homeowner"
         placeholder="Homeowner"
         value={homeownerValue}
         onChange={(e) => {
@@ -61,6 +63,8 @@ export const Sidebar = ({
         }}
       />
       <Input
+        data-testid="address-input"
+        id="address"
         placeholder="Address"
         value={addressValue}
         onChange={(e) => {
@@ -77,7 +81,7 @@ export const Sidebar = ({
           onSortByChange(val);
         }}
       >
-        <ComboboxInput placeholder="Sort by" />
+        <ComboboxInput data-testid="sort-by-combobox" placeholder="Sort by" />
         <ComboboxContent>
           <ComboboxEmpty>No items found.</ComboboxEmpty>
           <ComboboxList>
@@ -93,8 +97,8 @@ export const Sidebar = ({
         <FieldLabel>
           <Field orientation="horizontal">
             <Checkbox
-              id="toggle-checkbox-2"
-              name="toggle-checkbox-2"
+              data-testid="show-favorites-checkbox"
+              name="show-favorites"
               checked={showFavoritesValue}
               onCheckedChange={(checked) => {
                 setShowFavoritesValue(!!checked);
@@ -107,8 +111,12 @@ export const Sidebar = ({
           </Field>
         </FieldLabel>
       </FieldGroup>
-      <Button variant="outline" onClick={resetFilters}>
-        Clear Filter
+      <Button
+        data-testid="clear-filters-button"
+        variant="outline"
+        onClick={resetFilters}
+      >
+        Clear Filters
       </Button>
     </aside>
   );

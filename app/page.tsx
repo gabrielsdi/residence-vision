@@ -8,7 +8,7 @@ import { House } from "./types";
 import { HouseSkeleton } from "./skeleton/page";
 import { HouseCard } from "@/components/HouseCard";
 import { Header } from "@/components/Header";
-import { Sidebar } from "@/components/SideBar";
+import { SideBar } from "@/components/SideBar";
 import { ERROR_MESSAGES } from "./const/error";
 
 const PER_PAGE = 10;
@@ -119,7 +119,7 @@ export default function Home() {
   return (
     <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
       <Header />
-      <Sidebar
+      <SideBar
         onHomeownerChange={setHomeowner}
         onAddressChange={setAddress}
         onSortByChange={setSortBy}
