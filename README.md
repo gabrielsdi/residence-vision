@@ -14,7 +14,7 @@ A modern web application built with [Next.js](https://nextjs.org) for residence 
 1. Clone the repository:
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/gabrielsdi/residence-vision
 cd residence-vision
 ```
 
