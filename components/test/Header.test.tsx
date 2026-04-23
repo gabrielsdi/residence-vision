@@ -1,10 +1,10 @@
 import { render, screen } from "@testing-library/react";
-import { Header } from "./Header";
+import { Header } from "../Header";
 
 describe("Header", () => {
-  it("Should call show Header text on render", () => {
+  it("Should render the header logo", () => {
     render(<Header />);
 
-    expect(screen.getByText("Residence Vision")).toBeInTheDocument();
+    expect(screen.getByTestId("header-logo")).toBeInTheDocument();
   });
 });
