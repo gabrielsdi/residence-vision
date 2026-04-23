@@ -9,9 +9,11 @@ import { HouseSkeleton } from "../components/HouseSkeleton";
 import { HouseCard } from "@/components/HouseCard";
 import { SideBar } from "@/components/SideBar";
 import { ERROR_MESSAGES } from "./const/error";
+import { v4 as uuidv4 } from "uuid";
 
 const PER_PAGE = 10;
 const EMPTY_HOUSE_MESSAGE = "No more houses to load";
+const FILTERED_HOUSE_MESSAGE = "No results for the applied filters";
 
 export default function Home() {
   const [houses, setHouses] = useState<House[]>([]);
@@ -37,14 +39,20 @@ export default function Home() {
     setFavoritesHouses([]);
   };
 
-  const addFavoriteHouse = (house: House) => {
-    setFavoritesHouses((prev) => [...prev, house]);
+  const toggleFavoriteHouse = (house: House) => {
+    setFavoritesHouses((prev) => {
+      const isFavorite = prev.some((fav) => fav.id === house.id);
+      if (isFavorite) return prev.filter((fav) => fav.id !== house.id);
+      return [...prev, house];
+    });
   };
 
   const fetchHouses = () => {
     getHouses({ page: 1, perPage: PER_PAGE })
       .then(({ houses }) => {
-        setHouses(houses);
+        // Has to add this because the IDs of the houses are not unique and it causes issues with favorites feature
+        const housesWithUid = houses.map((h) => ({ ...h, uuid: uuidv4() }));
+        setHouses(housesWithUid);
         setHasMore(houses.length === PER_PAGE);
       })
       .catch((e: Error | unknown) => {
@@ -64,7 +72,8 @@ export default function Home() {
         page: nextPage,
         perPage: PER_PAGE,
       });
-      setHouses((prev) => [...prev, ...newHouses]);
+      const housesWithUid = newHouses.map((h) => ({ ...h, uuid: uuidv4() }));
+      setHouses((prev) => [...prev, ...housesWithUid]);
       setPage(nextPage);
       setHasMore(newHouses.length === PER_PAGE);
     } catch (e: Error | unknown) {
@@ -99,6 +108,9 @@ export default function Home() {
       return 0;
     });
 
+  const showFilteredMessage =
+    filteredHouses.length === 0 && !isFetchingMore && houses.length > 0;
+
   useEffect(() => {
     fetchHouses();
   }, []);
@@ -112,7 +124,7 @@ export default function Home() {
     );
 
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
+    <div className="flex flex-col flex-1 items-center font-sans dark:bg-black">
       <SideBar
         onHomeownerChange={setHomeowner}
         onAddressChange={setAddress}
@@ -121,8 +133,14 @@ export default function Home() {
         onClearFilter={clearFilters}
       />
 
+      {showFilteredMessage && (
+        <p className="text-center text-primary py-6">
+          {FILTERED_HOUSE_MESSAGE}
+        </p>
+      )}
+
       <InfiniteScroll
-        className="pt-26 w-full"
+        className=" w-full"
         style={{ minWidth: "100%", overflow: "visible" }}
         dataLength={houses.length}
         next={fetchMoreHouses}
@@ -140,7 +158,7 @@ export default function Home() {
         }
         endMessage={
           !isFiltering && (
-            <p className="text-center text-gray-400 py-6">
+            <p className="text-center text-primary py-6">
               {EMPTY_HOUSE_MESSAGE}
             </p>
           )
@@ -148,9 +166,9 @@ export default function Home() {
         scrollThreshold={0.9}
       >
         <ul className="flex flex-col gap-4 w-full max-w-3xl px-4">
-          {filteredHouses.map((house, index) => (
-            <li key={`${house.id}-${index}`} className="w-full">
-              <HouseCard house={house} onLikeToggle={addFavoriteHouse} />
+          {filteredHouses.map((house) => (
+            <li key={house.uuid} className="w-full">
+              <HouseCard house={house} onLikeToggle={toggleFavoriteHouse} />
             </li>
           ))}
         </ul>

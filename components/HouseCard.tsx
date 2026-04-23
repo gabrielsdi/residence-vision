@@ -6,6 +6,8 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { House } from "@/app/types";
 
+const WHATSAPP_URL = process.env.NEXT_PUBLIC_WHATSAPP_API_URL;
+
 export function HouseCard({
   house,
   onLikeToggle,
@@ -36,7 +38,7 @@ export function HouseCard({
     const message = encodeURIComponent(
       `Hi ${homeowner}, I'm interested in the property at ${address}.`,
     );
-    window.open(`https://wa.me/?text=${message}`, "_blank");
+    window.open(`${WHATSAPP_URL}/?text=${message}`, "_blank");
   };
 
   return (

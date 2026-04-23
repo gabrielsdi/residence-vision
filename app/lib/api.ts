@@ -6,7 +6,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_HOMEVISION_API_URL;
 // This function helps with the flaky API case
 async function fetchWithRetry<T>(
   fn: () => Promise<T>,
-  maxRetries = 5,
+  maxRetries = 7,
 ): Promise<T> {
   for (let attempt = 0; attempt < maxRetries; attempt++) {
     try {
@@ -18,7 +18,7 @@ async function fetchWithRetry<T>(
       if (!isFlakyError || attempt === maxRetries - 1) throw e;
     }
   }
-  throw new Error("Max retries reached");
+  throw new Error(ERROR_MESSAGES.MAX_RETRIES);
 }
 
 export async function getHouses({

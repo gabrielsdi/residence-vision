@@ -38,6 +38,16 @@ export const SideBar = ({
   const [sortByValue, setSortByValue] = useState("");
   const [showFavoritesValue, setShowFavoritesValue] = useState(false);
 
+  const CLEAR_FILTERS_TEXT = "Clear filters";
+  const SHOW_FAVORITES_TEXT = "Show Favorites";
+  const HOMEOWNER_PLACEHOLDER = "Homeowner";
+  const ADDRESS_PLACEHOLDER = "Address";
+  const SORT_BY_PLACEHOLDER = "Sort by";
+  const LOWEST_PRICE = "Lowest price";
+  const HIGHEST_PRICE = "Highest price";
+  const NO_ITEMS_FOUND = "No items found.";
+  const SORT_BY_ITEMS = [LOWEST_PRICE, HIGHEST_PRICE];
+
   const resetFilters = () => {
     setHomeownerValue("");
     setAddressValue("");
@@ -55,7 +65,7 @@ export const SideBar = ({
       <Input
         data-testid="homeowner-input"
         id="homeowner"
-        placeholder="Homeowner"
+        placeholder={HOMEOWNER_PLACEHOLDER}
         value={homeownerValue}
         onChange={(e) => {
           setHomeownerValue(e.target.value);
@@ -65,7 +75,7 @@ export const SideBar = ({
       <Input
         data-testid="address-input"
         id="address"
-        placeholder="Address"
+        placeholder={ADDRESS_PLACEHOLDER}
         value={addressValue}
         onChange={(e) => {
           setAddressValue(e.target.value);
@@ -73,7 +83,7 @@ export const SideBar = ({
         }}
       />
       <Combobox
-        items={["Lowest price", "Highest price"]}
+        items={SORT_BY_ITEMS}
         value={sortByValue}
         onValueChange={(value) => {
           const val = value || "";
@@ -81,9 +91,12 @@ export const SideBar = ({
           onSortByChange(val);
         }}
       >
-        <ComboboxInput data-testid="sort-by-combobox" placeholder="Sort by" />
+        <ComboboxInput
+          data-testid="sort-by-combobox"
+          placeholder={SORT_BY_PLACEHOLDER}
+        />
         <ComboboxContent>
-          <ComboboxEmpty>No items found.</ComboboxEmpty>
+          <ComboboxEmpty>{NO_ITEMS_FOUND}</ComboboxEmpty>
           <ComboboxList>
             {(item) => (
               <ComboboxItem key={item} value={item}>
@@ -106,7 +119,7 @@ export const SideBar = ({
               }}
             />
             <FieldContent>
-              <FieldTitle>Show Favorites</FieldTitle>
+              <FieldTitle>{SHOW_FAVORITES_TEXT}</FieldTitle>
             </FieldContent>
           </Field>
         </FieldLabel>
@@ -116,7 +129,7 @@ export const SideBar = ({
         variant="outline"
         onClick={resetFilters}
       >
-        Clear Filters
+        {CLEAR_FILTERS_TEXT}
       </Button>
     </aside>
   );

@@ -2,6 +2,7 @@ import { House } from "../types";
 
 export const mockHouse: House = {
   id: 1,
+  uuid: "123",
   address: "Calle Falsa 123",
   homeowner: "Jhon Doe",
   price: 200000,

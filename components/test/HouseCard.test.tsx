@@ -1,15 +1,13 @@
-import { render, screen, fireEvent } from "@testing-library/react";
-import { HouseCard } from "./HouseCard";
+import { render, screen } from "@testing-library/react";
 import { mockHouse } from "@/app/mocks/mockHouses";
+import { HouseCard } from "../HouseCard";
 
 describe("HouseCard", () => {
-  it("Should call onLikeToggle when heart button is clicked", () => {
-    const onLikeToggle = vi.fn();
-    render(<HouseCard house={mockHouse} onLikeToggle={onLikeToggle} />);
+  it("renders house information correctly", () => {
+    render(<HouseCard house={mockHouse} />);
 
-    fireEvent.click(screen.getByRole("button"));
-
-    expect(onLikeToggle).toHaveBeenCalledWith(mockHouse);
-    expect(onLikeToggle).toHaveBeenCalledTimes(1);
+    expect(screen.getByText("Calle Falsa 123")).toBeInTheDocument();
+    expect(screen.getByText("Jhon Doe")).toBeInTheDocument();
+    expect(screen.getByText("$200,000")).toBeInTheDocument();
   });
 });

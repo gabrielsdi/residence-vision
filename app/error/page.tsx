@@ -10,6 +10,7 @@ export default function ErrorPage({
   errorStatus: string;
   handleClick: () => void;
 }) {
+  const GO_HOME_TEXT = "Go Home";
   const ERROR_PAGE_MESSAGE = "Oops something went wrong";
   return (
     <div className="flex flex-col flex-1 items-center justify-center bg-white dark:bg-black pt-26 ">
@@ -31,7 +32,7 @@ export default function ErrorPage({
         size="lg"
         className="mt-4 cursor-pointer w-30 h-10"
       >
-        Go Home
+        {GO_HOME_TEXT}
       </Button>
     </div>
   );
