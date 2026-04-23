@@ -9,11 +9,9 @@ import { House } from "@/app/types";
 export function HouseCard({
   house,
   onLikeToggle,
-  onClick,
 }: {
   house: House;
   onLikeToggle?: (house: House) => void;
-  onClick?: (house: House) => void;
 }) {
   const [liked, setLiked] = useState<boolean>(false);
   const { address, homeowner, price, photoURL } = house;
@@ -27,10 +25,7 @@ export function HouseCard({
   };
 
   return (
-    <div
-      className="w-[768px] flex flex-row bg-white rounded-lg shadow-sm border border-zinc-200 overflow-hidden transition-transform duration-200 hover:scale-[1.02] cursor-pointer"
-      onClick={() => onClick?.(house)}
-    >
+    <div className="w-[768px] flex flex-row bg-white rounded-lg shadow-sm border border-zinc-200 overflow-hidden">
       <div className="relative w-72 h-45 shrink-0">
         <Image
           src={photoURL}

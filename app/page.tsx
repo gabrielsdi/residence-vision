@@ -7,7 +7,6 @@ import ErrorPage from "./error/page";
 import { House } from "./types";
 import { HouseSkeleton } from "../components/HouseSkeleton";
 import { HouseCard } from "@/components/HouseCard";
-import { Header } from "@/components/Header";
 import { SideBar } from "@/components/SideBar";
 import { ERROR_MESSAGES } from "./const/error";
 
@@ -40,10 +39,6 @@ export default function Home() {
 
   const addFavoriteHouse = (house: House) => {
     setFavoritesHouses((prev) => [...prev, house]);
-  };
-
-  const handleHouseClick = (house: House) => {
-    console.log("Click", house);
   };
 
   const fetchHouses = () => {
@@ -118,7 +113,6 @@ export default function Home() {
 
   return (
     <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <Header />
       <SideBar
         onHomeownerChange={setHomeowner}
         onAddressChange={setAddress}
@@ -156,11 +150,7 @@ export default function Home() {
         <ul className="flex flex-col gap-4 w-full max-w-3xl px-4">
           {filteredHouses.map((house, index) => (
             <li key={`${house.id}-${index}`} className="w-full">
-              <HouseCard
-                house={house}
-                onLikeToggle={addFavoriteHouse}
-                onClick={handleHouseClick}
-              />
+              <HouseCard house={house} onLikeToggle={addFavoriteHouse} />
             </li>
           ))}
         </ul>
