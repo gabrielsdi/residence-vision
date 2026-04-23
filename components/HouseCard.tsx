@@ -45,7 +45,7 @@ export function HouseCard({
               size="icon"
               variant="ghost"
               onClick={toggleLike}
-              className="rounded-full"
+              className="rounded-full cursor-pointer"
             >
               <HeartIcon
                 className={cn(
