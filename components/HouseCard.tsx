@@ -8,16 +8,15 @@ import { House } from "@/app/types";
 
 const WHATSAPP_URL = process.env.NEXT_PUBLIC_WHATSAPP_API_URL;
 
-export function HouseCard({
-  house,
-  onLikeToggle,
-}: {
+interface HouseCardProps {
   house: House;
   onLikeToggle?: (house: House) => void;
-}) {
+}
+
+export function HouseCard({ house, onLikeToggle }: HouseCardProps) {
   const [liked, setLiked] = useState<boolean>(false);
-  const { address, homeowner, price, photoURL } = house;
-  const formattedPrice = `$${price.toLocaleString()}`;
+  const { address, homeowner, price, photoURL } = house || {};
+  const formattedPrice = price ? `$${price.toLocaleString()}` : "";
 
   const toggleLike = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -35,6 +34,14 @@ export function HouseCard({
 
   const handleWhatsapp = (e: React.MouseEvent) => {
     e.stopPropagation();
+
+    if (!WHATSAPP_URL) {
+      console.error(
+        "WhatsApp URL is missing. Set NEXT_PUBLIC_WHATSAPP_API_URL environment variable.",
+      );
+      return;
+    }
+
     const message = encodeURIComponent(
       `Hi ${homeowner}, I'm interested in the property at ${address}.`,
     );

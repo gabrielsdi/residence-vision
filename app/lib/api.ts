@@ -29,6 +29,11 @@ export async function getHouses({
   perPage: number;
 }): Promise<HousesResponse> {
   return fetchWithRetry(async () => {
+    if (!BASE_URL) {
+      throw new Error(
+        "API URL is missing. Set NEXT_PUBLIC_HOMEVISION_API_URL environment variable.",
+      );
+    }
     const url = `${BASE_URL}?page=${page}&per_page=${perPage}`;
     const res = await fetch(url);
 
