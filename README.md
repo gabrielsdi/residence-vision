@@ -7,7 +7,7 @@ A modern web application built with [Next.js](https://nextjs.org) for residence 
 ### Prerequisites
 
 - Node.js (version 18 or higher)
-- npm, yarn, pnpm, or bun package manager
+- npm package manager
 
 ### Installation
 
@@ -22,12 +22,6 @@ cd residence-vision
 
 ```bash
 npm install
-# or
-yarn install
-# or
-pnpm install
-# or
-bun install
 ```
 
 ### Running the Development Server
@@ -36,15 +30,23 @@ Start the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+### Running Unit Tests
+
+Run the test suite:
+
+```bash
+npm test
+```
+
+Run tests with a UI interface:
+
+```bash
+npm run test:ui
+```
 
 ## Demo
 
