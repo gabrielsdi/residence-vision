@@ -2,8 +2,8 @@ import { HousesResponse } from "../types";
 import { SERVICE_UNAVAILABLE_STATUS, ERROR_MESSAGES } from "../const/error";
 
 const BASE_URL = process.env.NEXT_PUBLIC_HOMEVISION_API_URL;
+const TIMEOUT_MS = 5000;
 
-// This function helps with the flaky API case
 async function fetchWithRetry<T>(
   fn: () => Promise<T>,
   maxRetries = 7,
@@ -21,6 +21,18 @@ async function fetchWithRetry<T>(
   throw new Error(ERROR_MESSAGES.MAX_RETRIES);
 }
 
+async function fetchWithTimeout(url: string): Promise<Response> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
+
+  try {
+    const res = await fetch(url, { signal: controller.signal });
+    return res;
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
 export async function getHouses({
   page,
   perPage,
@@ -34,8 +46,9 @@ export async function getHouses({
         "API URL is missing. Set NEXT_PUBLIC_HOMEVISION_API_URL environment variable.",
       );
     }
+
     const url = `${BASE_URL}?page=${page}&per_page=${perPage}`;
-    const res = await fetch(url);
+    const res = await fetchWithTimeout(url);
 
     if (!res.ok) {
       if (res.status === SERVICE_UNAVAILABLE_STATUS) {
